@@ -22,16 +22,34 @@ public class Logic {
     }
 
     public boolean move(Cell source, Cell dest) {
-        boolean rst = false;
+        boolean rsl = false;
         int index = this.findBy(source);
+
         if (index != -1) {
-            Cell[] steps = this.figures[index].way(source, dest);
-            if (steps.length > 0 && steps[steps.length - 1].equals(dest)) {
-                rst = true;
-                this.figures[index] = this.figures[index].copy(dest);
+            try {
+                Cell[] steps = this.figures[index].way(source, dest);
+                if (steps.length > 0
+                    && !hasImpedimentInWay(steps)
+                    && steps[steps.length - 1].equals(dest)
+                ) {
+                    this.figures[index] = this.figures[index].copy(dest);
+                    rsl = true;
+                }
+            } catch (IllegalStateException exception) {
             }
         }
-        return rst;
+
+        return rsl;
+    }
+
+    private boolean hasImpedimentInWay(Cell[] way) {
+        for (Cell cell : way) {
+            int wayIndex = this.findBy(cell);
+            if (wayIndex != -1) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void clean() {
